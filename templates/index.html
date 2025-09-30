@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HE DQ Rules Automation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            color: #34495e;
+        }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            background: #3498db;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .note {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HE DQ Rules Automation</h1>
+        <form method="POST" enctype="multipart/form-data">
+
+            <label for="dq_excel">DQ Rules Excel:</label>
+            <input type="file" id="dq_excel" name="dq_excel" accept=".xlsx,.xls">
+
+            <label for="jira_excel">Jira Description Excel:</label>
+            <input type="file" id="jira_excel" name="jira_excel" accept=".xlsx,.xls">
+
+            <button type="submit">Generate CSV</button>
+            <p class="note">Upload both Excel files and specify version to generate the final CSV.</p>
+        </form>
+    </div>
+</body>
+</html>

@@ -8,9 +8,12 @@ from rules.writers import write_csv, write_xml, update_dev_file
 
 engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5434/postgres")
 
-def main():
-    dq_rules_master = pd.read_excel(input("Enter path to DQ rules master Excel: ").strip(), sheet_name=None)
-    jira_desc = pd.read_excel(input("Enter path to JIRA description Excel: ").strip())
+def main(dq_file_path, jira_file_path):
+    # Load all sheets in the DQ rules excel into a dict of DataFrames
+    dq_rules_master = pd.read_excel(dq_file_path, sheet_name=None)
+    # Load Jira excel into a single DataFrame
+    jira_desc = pd.read_excel(jira_file_path)
+    # Standardize column names: lowercase + strip whitespace
     jira_desc.columns = [c.strip().lower() for c in jira_desc.columns]
 
     add_rules_df = jira_desc[jira_desc["action"].str.lower() == "add"]
@@ -29,7 +32,7 @@ def main():
     dev_file = update_dev_file(dev_path, version)
     print(f"Updated Dev File: {dev_file}")
 
-    configure_rules_all = jira_desc[jira_desc["action"].str.lower() == "configure"]
+    # configure_rules_all = jira_desc[jira_desc["action"].str.lower() == "configure"]
 
     # for tenant in TENANT_NAMES.keys():
         # add_rules_df = configure_rules_all[configure_rules_all["tenant"] == tenant]
@@ -49,6 +52,4 @@ def main():
 
         # dev_file = update_dev_file(dev_path, version)
         # print(f"Updated Dev File: {dev_file}")
-
-if __name__ == "__main__":
-    main()
+    return csv_file, xml_file
