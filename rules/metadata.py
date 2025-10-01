@@ -29,5 +29,7 @@ def get_metadata_id(metadata_set, metadata_value, engine):
         FROM healthfirst_configdb.validation_rule_metadata
         WHERE metadata_set = %s AND metadata_value = %s
     """
-    df = pd.read_sql_query(query, engine, params=(metadata_set, metadata_value))
+    with engine.connect() as conn:
+        df = pd.read_sql_query(query, conn, params=(metadata_set, metadata_value))
+    # df = pd.read_sql_query(query, engine, params=(metadata_set, metadata_value))
     return df.iloc[0,0] if not df.empty else None

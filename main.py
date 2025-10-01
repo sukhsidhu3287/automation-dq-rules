@@ -16,7 +16,10 @@ def main(dq_file_path, jira_file_path):
     # Standardize column names: lowercase + strip whitespace
     jira_desc.columns = [c.strip().lower() for c in jira_desc.columns]
 
-    add_rules_df = jira_desc[jira_desc["action"].str.lower() == "add"]
+    add_rules_df = jira_desc[
+        (jira_desc["action"].str.lower() == "add") | 
+        (jira_desc["action"].str.lower() == "update")
+    ]
 
     path = TENANT_DATA_FOLDER_PATHS["c"]
     dev_path = TENANT_DEV_FILE_PATHS["c"]
@@ -32,25 +35,5 @@ def main(dq_file_path, jira_file_path):
     dev_file = update_dev_file(dev_path, version, add_rules_df.iloc[0]["ticket"])
     print(f"Updated Dev File: {dev_file}")
 
-    # configure_rules_all = jira_desc[jira_desc["action"].str.lower() == "configure"]
-
-    # for tenant in TENANT_NAMES.keys():
-        # add_rules_df = configure_rules_all[configure_rules_all["tenant"] == tenant]
-        # if add_rules_df.empty:
-        #     continue
-
-        # path = TENANT_DATA_FOLDER_PATHS[tenant]
-        # dev_path = TENANT_DEV_FILE_PATHS[tenant]
-        # version = get_version_info(path)
-
-        # dq_rules_csv = prepare_rules_extn(dq_rules_master, add_rules_df, TENANT_NAMES[tenant], engine, SHEET_NAME)
-        # csv_file = write_csv(dq_rules_csv, path, version)
-        # print(f"Generated CSV: {csv_file}")
-
-        # xml_file = write_xml(path, version, add_rules_df.iloc[0]["ticket"])
-        # print(f"Generated XML: {xml_file}")
-
-        # dev_file = update_dev_file(dev_path, version)
-        # print(f"Updated Dev File: {dev_file}")
     print("All done!")
     return csv_file, xml_file
