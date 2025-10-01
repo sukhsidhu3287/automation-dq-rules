@@ -29,7 +29,7 @@ def main(dq_file_path, jira_file_path):
     xml_file = write_xml(path, version, add_rules_df.iloc[0]["ticket"])
     print(f"Generated XML: {xml_file}")
 
-    dev_file = update_dev_file(dev_path, version)
+    dev_file = update_dev_file(dev_path, version, add_rules_df.iloc[0]["ticket"])
     print(f"Updated Dev File: {dev_file}")
 
     # configure_rules_all = jira_desc[jira_desc["action"].str.lower() == "configure"]
@@ -52,4 +52,5 @@ def main(dq_file_path, jira_file_path):
 
         # dev_file = update_dev_file(dev_path, version)
         # print(f"Updated Dev File: {dev_file}")
+    print("All done!")
     return csv_file, xml_file

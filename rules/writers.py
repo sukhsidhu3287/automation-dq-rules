@@ -57,26 +57,45 @@ def write_xml(path, version, ticket_number):
 """)
     return xml_file
 
-def update_dev_file(path: str, version: str):
+def update_dev_file(path, version, ticket_number):
     now = datetime.now()
     year_digit = 2 if now.year < 2026 else 3
     dev_file = os.path.join(path, f"dev-{year_digit}.{now.month}.0.xml")
 
-    include_line = f'    <include file="data/load_validation_rules_data_ver_{version}.xml" relativeToChangelogFile="true"/>'
+    include_line = f'\n<!-- below are for {ticket_number} ADD DQ Rules-->\n<include file="data/load_validation_rules_data_ver_{version}.xml" relativeToChangelogFile="true"/>\n'
+
+    print(f"Updating Dev File: {dev_file}")
 
     if not os.path.exists(dev_file):
+        print(f"Dev file does not exist. Creating new one: {dev_file}")
         with open(dev_file, "w", encoding="utf-8") as f:
             f.write(f"<databaseChangeLog> ... {include_line} ... </databaseChangeLog>")
     else:
         with open(dev_file, "r", encoding="utf-8") as f:
             content = f.read()
         if include_line not in content:
-            pattern = r'(<include [^>]+/>\s*)'
-            matches = list(re.finditer(pattern, content))
-            last = matches[-1]
-            insert_pos = last.end()
-            content = content[:insert_pos] + "\n" + include_line + "\n" + content[insert_pos:]
+            # Look for all <include .../> tags
+            include_pattern = r'(<include [^>]+/>\s*)'
+            matches = list(re.finditer(include_pattern, content))
+
+            if matches:
+                # Insert after last include
+                last = matches[-1]
+                insert_pos = last.end()
+                content = content[:insert_pos] + "\n" + include_line + "\n" + content[insert_pos:]
+            else:
+                # No <include>, insert before <changeSet author="${author}" id="configdb_ver_2_10_0">
+                change_set_pattern = r'(<changeSet\s+author="\$\{author\}"\s+id="configdb_ver_2_10_0"\s*>)'
+                match = re.search(change_set_pattern, content)
+                if match:
+                    insert_pos = match.start()
+                    content = content[:insert_pos] + include_line + "\n" + content[insert_pos:]
+                else:
+                    raise ValueError("Could not find target <changeSet> block for insertion.")
+            
             with open(dev_file, "w", encoding="utf-8") as f:
                 f.write(content)
+
+
     return dev_file
 

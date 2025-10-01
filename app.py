@@ -15,13 +15,13 @@ def index():
         jira_file = request.files["jira_excel"]
 
         dq_rules_master_path = os.path.join(UPLOAD_FOLDER, "dq_rules_master.xlsx")
-        jjira_description_path = os.path.join(UPLOAD_FOLDER, "jira_description.xlsx")
+        jira_description_path = os.path.join(UPLOAD_FOLDER, "jira_description.xlsx")
 
         dq_file.save(dq_rules_master_path)
-        jira_file.save(jjira_description_path)
+        jira_file.save(jira_description_path)
 
         try:
-            csv_file_path, xml_file_path = main(dq_rules_master_path, jjira_description_path)
+            csv_file_path, xml_file_path = main(dq_rules_master_path, jira_description_path)
             return render_template("result.html", csv_file=csv_file_path, xml_file=xml_file_path)
         except Exception as e:
             return f"Error generating files: {e}", 400
