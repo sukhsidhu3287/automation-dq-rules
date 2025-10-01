@@ -31,7 +31,6 @@ def get_metadata_id(metadata_set, metadata_value, engine):
     """
     with engine.connect() as conn:
         df = pd.read_sql_query(query, conn, params=(metadata_set, metadata_value))
-    # df = pd.read_sql_query(query, engine, params=(metadata_set, metadata_value))
     return df.iloc[0,0] if not df.empty else None
 
 # def get_metadata_id(metadata_set, metadata_value, engine):

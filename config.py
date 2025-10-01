@@ -1,10 +1,14 @@
 import os
+from sqlalchemy import create_engine
 
-COMMON_PATH = r"C:\Users\VarunMandloi\Downloads\HE_PDM\HE_PDM\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
+COMMON_PATH = r"C:\Users\sukhd\Projects\HE_PDM\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
 HF_PATH = os.path.join(COMMON_PATH, "tenants", "healthfirst")
 PEHP_PATH = os.path.join(COMMON_PATH, "tenants", "pehp")
 SUTTER_PATH = os.path.join(COMMON_PATH, "tenants", "sutter")
 HSYNC_PATH = os.path.join(COMMON_PATH, "tenants", "healthsync")
+
+
+ENGINE = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5434/postgres")
 
 TENANT_DEV_FILE_PATHS = {
     "c": COMMON_PATH,

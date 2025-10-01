@@ -7,15 +7,7 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
     max_id_query = f"SELECT COALESCE(MAX(rule_id), 0) AS max_rule_id FROM healthfirst_configdb.validation_rules"
     with engine.connect() as conn:
         max_id_df =  pd.read_sql(max_id_query, conn)
-    # max_id_df = pd.read_sql(max_id_query, engine)
     max_rule_id = int(max_id_df["max_rule_id"].iloc[0])
-
-    # with engine.connect() as conn:
-    #     max_id_df = pd.read_sql(max_id_query, conn)
-
-    max_id_df = pd.read_sql(max_id_query, engine)
-    
-    next_rule_id = int(max_id_df["max_rule_id"].iloc[0]) + 1
 
     rows = []
     for _, rule in add_rules_df.iterrows():
@@ -67,7 +59,7 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
             FROM healthfirst_configdb.validation_rules 
             WHERE business_rule_id = :rule_id
         """)
-        
+
         with engine.connect() as conn:
             existing_rule_id = pd.read_sql(rule_id_query, conn, params={"rule_id": master_mapping_row.get("RuleID")})
 
