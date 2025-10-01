@@ -1,6 +1,6 @@
 import os
 
-COMMON_PATH = r"C:\Users\sukhd\Projects\HE_PDM\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
+COMMON_PATH = r"C:\Users\VarunMandloi\Downloads\HE_PDM\HE_PDM\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
 HF_PATH = os.path.join(COMMON_PATH, "tenants", "healthfirst")
 PEHP_PATH = os.path.join(COMMON_PATH, "tenants", "pehp")
 SUTTER_PATH = os.path.join(COMMON_PATH, "tenants", "sutter")

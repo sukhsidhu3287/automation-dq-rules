@@ -6,7 +6,7 @@ from rules.metadata import get_version_info
 from rules.prepare import prepare_rules, prepare_rules_extn
 from rules.writers import write_csv, write_xml, update_dev_file
 
-engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5434/postgres")
+engine = create_engine("postgresql+psycopg2://pdm:postgres@localhost:5432/pdm_db")
 
 def main(dq_file_path, jira_file_path):
     # Load all sheets in the DQ rules excel into a dict of DataFrames

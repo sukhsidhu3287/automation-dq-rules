@@ -4,7 +4,12 @@ from .metadata import get_metadata_id
 
 def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
     max_id_query = f"SELECT COALESCE(MAX(rule_id), 0) AS max_rule_id FROM healthfirst_configdb.validation_rules"
+
+    # with engine.connect() as conn:
+    #     max_id_df = pd.read_sql(max_id_query, conn)
+
     max_id_df = pd.read_sql(max_id_query, engine)
+    
     next_rule_id = int(max_id_df["max_rule_id"].iloc[0]) + 1
 
     rows = []
