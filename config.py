@@ -14,7 +14,7 @@ HOST = "localhost"
 PORT = "5432"
 DB = "pdm_db"
 
-ENGINE = create_engine("postgresql+psycopg2://pdm:postgres@localhost:5432/pdm_db")
+ENGINE = create_engine(f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
 
 TENANT_DEV_FILE_PATHS = {
     "c": COMMON_PATH,
