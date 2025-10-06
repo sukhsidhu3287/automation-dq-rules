@@ -21,10 +21,10 @@ def index():
         jira_file.save(jira_description_path)
 
         try:
-            csv_file_path, xml_file_path = main(dq_rules_master_path, jira_description_path)
-            return render_template("result.html", csv_file=csv_file_path, xml_file=xml_file_path)
+            main(dq_rules_master_path, jira_description_path)
+            return render_template("passed.html")
         except Exception as e:
-            return f"Error generating files: {e}", 400
+            return render_template("failed.html", error=str(e))
 
     return render_template("index.html")
 

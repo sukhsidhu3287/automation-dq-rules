@@ -7,7 +7,7 @@ def write_csv(df, path, version):
     df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
     return file
 
-def write_extn_csv(df, path, version):
+def write_csv_extn(df, path, version):
     os.makedirs(path, exist_ok=True)
     file = os.path.join(path, f"load_des_validation_rules_extn_data_ver_{version}.csv")
     df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
