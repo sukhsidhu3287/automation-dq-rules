@@ -2,9 +2,9 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 from config import TENANT_NAMES, TENANT_DATA_FOLDER_PATHS, TENANT_DEV_FILE_PATHS, SHEET_NAME, ENGINE
-from rules.metadata import get_version_info
+from rules.metadata import get_version_info, get_version_info_extn
 from rules.prepare import prepare_rules, prepare_rules_extn
-from rules.writers import write_csv, write_xml, update_dev_file
+from rules.writers import write_csv, write_xml, update_dev_file, write_csv_extn, write_xml_extn
 
 engine = ENGINE
 def main(dq_file_path, jira_file_path):
@@ -33,6 +33,25 @@ def main(dq_file_path, jira_file_path):
 
     dev_file = update_dev_file(dev_path, version, add_rules_df.iloc[0]["ticket"])
     print(f"Updated Dev File: {dev_file}")
+
+    configure_rules_df = jira_desc[jira_desc["action"].str.lower() == "configure"]
+    for tenant in TENANT_NAMES:
+        path = TENANT_DATA_FOLDER_PATHS[tenant]
+        dev_path = TENANT_DEV_FILE_PATHS[tenant]
+        version = get_version_info_extn(path)
+        print(f"Processing tenant '{tenant}' with version '{version}'")
+        configure_rules_df_tenant_specific = configure_rules_df[configure_rules_df["tenant"].str.lower() == tenant.lower()]
+
+         # Write CSV for tenant
+        if not configure_rules_df_tenant_specific.empty:
+            dq_rules_extn = prepare_rules_extn(dq_rules_master, configure_rules_df_tenant_specific, engine, SHEET_NAME, csv_file)
+            if not dq_rules_extn.empty:
+                extn_csv_file = write_csv(dq_rules_extn, TENANT_DATA_FOLDER_PATHS[tenant], version, extn=True)
+                print(f"Generated Extension CSV for tenant '{tenant}': {extn_csv_file}")
+            else:
+                print(f"No configuration changes for tenant '{tenant}'.")
+        csv_file = write_csv_extn(dq_rules_csv, path, version)  
+        xml_file = write_xml_extn(path, version, add_rules_df.iloc[0]["ticket"])
 
     print("All done!")
     return csv_file, xml_file

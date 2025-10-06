@@ -1,18 +1,19 @@
 import os
 from sqlalchemy import create_engine
 
-COMMON_PATH = r"C:\Users\VarunMandloi\Downloads\HE_PDM\HE_PDM\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
+
+COMMON_PATH = r"c:\Users\sukhd\Projects\HE_PDM\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
 HF_PATH = os.path.join(COMMON_PATH, "tenants", "healthfirst")
 PEHP_PATH = os.path.join(COMMON_PATH, "tenants", "pehp")
 SUTTER_PATH = os.path.join(COMMON_PATH, "tenants", "sutter")
 HSYNC_PATH = os.path.join(COMMON_PATH, "tenants", "healthsync")
 
 # DB ENVIRONMENT VARIABLES
-USER = "pdm"
+USER = "postgres"
 PASSWORD = "postgres"
 HOST = "localhost"
-PORT = "5432"
-DB = "pdm_db"
+PORT = "5434"
+DB = "postgres"
 
 ENGINE = create_engine(f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
 

@@ -7,6 +7,12 @@ def write_csv(df, path, version):
     df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
     return file
 
+def write_extn_csv(df, path, version):
+    os.makedirs(path, exist_ok=True)
+    file = os.path.join(path, f"load_des_validation_rules_extn_data_ver_{version}.csv")
+    df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
+    return file
+
 def write_xml(path, version, ticket_number):
     xml_file = os.path.join(path, f"load_validation_rules_data_ver_{version}.xml")
     with open(xml_file, "w", encoding="utf-8") as f:
@@ -57,6 +63,47 @@ def write_xml(path, version, ticket_number):
 """)
     return xml_file
 
+def write_xml_extn(path, version, ticket_number):
+    xml_file = os.path.join(path, f"load_des_validation_rules_extn_data_ver_{version}.xml")
+    with open(xml_file, "w", encoding="utf-8") as f:
+        f.write(f"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog  xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+                                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                                    http://www.liquibase.org/xml/ns/pro 
+                                    http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet author="${{author}}" id="load_des_validation_rules_extn_data_ver_{version}__{ticket_number}">
+        <loadUpdateData tableName="des_validation_rules_extn"
+                  file="load_des_validation_rules_extn_data_ver_2_9_5.csv"
+                  encoding="UTF-8"
+                  separator=","
+                  primaryKey="rule_extn_id"
+                  relativeToChangelogFile="true">                  
+            <column index="0" name="rule_extn_id" type="numeric"/>
+            <column index="1" name="rule_id" type="numeric"/>
+			<column index="2" name="task_id" type="numeric"/>
+			<column index="3" name="rule_applied_zone" type="string"/>
+			<column index="4" name="hrpdm_table_id" type="string"/>
+			<column index="5" name="hrpdm_column_names" type="string"/>
+			<column index="6" name="source_table_id" type="string"/>
+			<column index="7" name="source_column_names" type="string"/>
+			<column index="8" name="sql_query" type="string"/>
+			<column index="9" name="active_flag" type="string"/>
+			<column index="10" name="implmnt_type" type="string"/>
+			<column index="11" name="implmnt_order" type="numeric"/>
+			<column index="12" name="reference_codeset_id" type="numeric"/>
+			<column index="13" name="entity_key" type="string"/>
+			<column index="14" name="pdm_entity_id" type="numeric"/>	
+			<column index="15" name="source_owner_name" type="string"/>	
+        </loadUpdateData>
+    </changeSet>
+
+
+</databaseChangeLog>""")
+    return xml_file
+
 def update_dev_file(path, version, ticket_number):
     now = datetime.now()
     year_digit = 2 if now.year < 2026 else 3
@@ -98,4 +145,3 @@ def update_dev_file(path, version, ticket_number):
 
 
     return dev_file
-
