@@ -2,7 +2,7 @@ import os
 from sqlalchemy import create_engine
 
 
-COMMON_PATH = r"c:\Users\sukhd\Projects\HE_PDM\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
+COMMON_PATH = r"c:\Users\sukhd\Projects\HE_PDM_code\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
 HF_PATH = os.path.join(COMMON_PATH, "tenants", "healthfirst")
 PEHP_PATH = os.path.join(COMMON_PATH, "tenants", "pehp")
 SUTTER_PATH = os.path.join(COMMON_PATH, "tenants", "sutter")
