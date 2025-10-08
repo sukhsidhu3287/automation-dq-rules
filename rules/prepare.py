@@ -30,7 +30,7 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
         rule_category_id = get_metadata_id("Rule Category", rule_category, engine)
 
         #rule type
-        rule_type = str(rule.get("Rule Type", "")).upper().strip()
+        rule_type = str(rule.get("RuleType", "")).upper().strip()
         rule_type_id = get_metadata_id("Rule Type", rule_type, engine)
 
         # Entity Type
