@@ -234,7 +234,7 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
         else:
             source_table_id_query = text(f"select distinct source_table_id from {tenant}_configdb.des_validation_rules_extn where source_owner_name = :source_owner_name")
             source_table_id = pd.read_sql(source_table_id_query, engine, params={"source_owner_name": rule.get("sourceownername", "").upper()})
-            source_table_id = source_table_id.iloc[0,0] if not source_table_id.empty else None
+            source_table_id = ','.join(source_table_id.iloc[:,0].astype(str)) if not source_table_id.empty else None
         
         row_to_append = {
             "rule_extn_id": rule_extn_id,
