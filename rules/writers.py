@@ -17,7 +17,6 @@ def write_csv(df, path, version):
         filename = f"load_validation_rules_data_ver_{version}.csv"
         file = os.path.join(path, filename)
         
-        print(f"Writing CSV to: {file}")
         df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
         return file
     except OSError as e:
@@ -28,7 +27,7 @@ def write_csv_extn(df, path, version):
         os.makedirs(path, exist_ok=True)
         filename = f"load_des_validation_rules_extn_data_ver_{version}.csv"
         file = os.path.join(path, filename)
-        print(f"Writing CSV extension to: {file}")
+
         df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
         return file
     except OSError as e:
@@ -39,7 +38,7 @@ def write_xml(path, version, ticket_number):
         os.makedirs(path, exist_ok=True)
         filename = f"load_validation_rules_data_ver_{version}.xml"
         xml_file = os.path.join(path, filename)
-        print(f"Writing XML to: {xml_file}")
+
         with open(xml_file, "w", encoding="utf-8") as f:
             f.write(f"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -95,7 +94,7 @@ def write_xml_extn(path, version, ticket_number):
         os.makedirs(path, exist_ok=True)
         filename = f"load_des_validation_rules_extn_data_ver_{version}.xml"
         xml_file = os.path.join(path, filename)
-        print(f"Writing XML extension to: {xml_file}")
+
         with open(xml_file, "w", encoding="utf-8") as f:
             f.write(f"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog  xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -153,10 +152,8 @@ def update_dev_file(path, version, ticket_number):
 
         include_line = f'\n<!-- below are for {ticket_number} ADD DQ Rules-->\n<include file="data/load_validation_rules_data_ver_{version}.xml" relativeToChangelogFile="true"/>\n'
 
-        print(f"Updating Dev File: {dev_file}")
 
         if not os.path.exists(dev_file):
-            print(f"Dev file does not exist. Creating new one: {dev_file}")
             with open(dev_file, "w", encoding="utf-8") as f:
                 f.write(f"<databaseChangeLog> ... {include_line} ... </databaseChangeLog>")
         else:

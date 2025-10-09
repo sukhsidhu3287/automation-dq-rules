@@ -30,7 +30,7 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
         rule_category_id = get_metadata_id("Rule Category", rule_category, engine)
 
         #rule type
-        rule_type = str(rule.get("Rule Type", "")).upper().strip()
+        rule_type = str(rule.get("ruletype")).upper().strip()
         rule_type_id = get_metadata_id("Rule Type", rule_type, engine)
 
         # Entity Type
@@ -114,13 +114,13 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
         with engine.connect() as conn:
             DQ_table_rule_id = pd.read_sql(DQ_table_rule_id_query, conn, params={"rule_id": rule["ruleid"]})
         DQ_table_rule_id = int(DQ_table_rule_id.iloc[0,0])
-        print(DQ_table_rule_id)
+
         already_configured = text(f"""
             SELECT 1 FROM {tenant}_configdb.des_validation_rules_extn WHERE rule_id = :rule_id
         """)
         with engine.connect() as conn:
             exists_df = pd.read_sql(already_configured, conn, params={"rule_id": DQ_table_rule_id})
-        print(exists_df)
+        
         if exists_df.empty:
             rule_extn_id = max_rule_extn_id + 1
             max_rule_extn_id += 1
@@ -194,5 +194,4 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
             "source_owner_name": rule.get("sourceownername", "").upper()
             })
         
-    print(pd.DataFrame(rows))
     return pd.DataFrame(rows)

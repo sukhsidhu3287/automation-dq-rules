@@ -7,8 +7,6 @@ COMMON_PATH = r"c:\Users\sukhd\Projects\HE_PDM_code\hrp.pdm.schema.service\src\m
 # Validate that the base path exists - if not, provide helpful error message
 if not os.path.exists(COMMON_PATH):
     print(f"WARNING: COMMON_PATH does not exist: {COMMON_PATH}")
-    print(f"Please update the COMMON_PATH in config.py to match your local project structure.")
-    print(f"The application will attempt to create the necessary directories, but file operations may fail.")
 HF_PATH = os.path.join(COMMON_PATH, "tenants", "healthfirst")
 PEHP_PATH = os.path.join(COMMON_PATH, "tenants", "pehp")
 SUTTER_PATH = os.path.join(COMMON_PATH, "tenants", "sutter")
