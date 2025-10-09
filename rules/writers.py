@@ -2,21 +2,46 @@ import os, csv, re
 from datetime import datetime
 
 def write_csv(df, path, version):
-    os.makedirs(path, exist_ok=True)
-    file = os.path.join(path, f"load_validation_rules_data_ver_{version}.csv")
-    df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
-    return file
+    try:
+        # Validate path components
+        if not path:
+            raise ValueError(f"Invalid path: path is empty")
+        
+        # Create directory with better error handling
+        os.makedirs(path, exist_ok=True)
+        
+        # Validate filename components
+        if not version or not str(version).strip():
+            raise ValueError(f"Invalid version: '{version}'")
+        
+        filename = f"load_validation_rules_data_ver_{version}.csv"
+        file = os.path.join(path, filename)
+        
+        print(f"Writing CSV to: {file}")
+        df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
+        return file
+    except OSError as e:
+        raise OSError(f"Failed to write CSV file. Path: '{path}', Version: '{version}'. Error: {str(e)}") from e
 
 def write_csv_extn(df, path, version):
-    os.makedirs(path, exist_ok=True)
-    file = os.path.join(path, f"load_des_validation_rules_extn_data_ver_{version}.csv")
-    df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
-    return file
+    try:
+        os.makedirs(path, exist_ok=True)
+        filename = f"load_des_validation_rules_extn_data_ver_{version}.csv"
+        file = os.path.join(path, filename)
+        print(f"Writing CSV extension to: {file}")
+        df.to_csv(file, index=False, quoting=csv.QUOTE_ALL, encoding="utf-8")
+        return file
+    except OSError as e:
+        raise OSError(f"Failed to write CSV extension file. Path: '{path}', Version: '{version}'. Error: {str(e)}") from e
 
 def write_xml(path, version, ticket_number):
-    xml_file = os.path.join(path, f"load_validation_rules_data_ver_{version}.xml")
-    with open(xml_file, "w", encoding="utf-8") as f:
-        f.write(f"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    try:
+        os.makedirs(path, exist_ok=True)
+        filename = f"load_validation_rules_data_ver_{version}.xml"
+        xml_file = os.path.join(path, filename)
+        print(f"Writing XML to: {xml_file}")
+        with open(xml_file, "w", encoding="utf-8") as f:
+            f.write(f"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
@@ -61,12 +86,18 @@ def write_xml(path, version, ticket_number):
 
 </databaseChangeLog>
 """)
-    return xml_file
+        return xml_file
+    except OSError as e:
+        raise OSError(f"Failed to write XML file. Path: '{path}', Version: '{version}'. Error: {str(e)}") from e
 
 def write_xml_extn(path, version, ticket_number):
-    xml_file = os.path.join(path, f"load_des_validation_rules_extn_data_ver_{version}.xml")
-    with open(xml_file, "w", encoding="utf-8") as f:
-        f.write(f"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    try:
+        os.makedirs(path, exist_ok=True)
+        filename = f"load_des_validation_rules_extn_data_ver_{version}.xml"
+        xml_file = os.path.join(path, filename)
+        print(f"Writing XML extension to: {xml_file}")
+        with open(xml_file, "w", encoding="utf-8") as f:
+            f.write(f"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog  xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xmlns:pro="http://www.liquibase.org/xml/ns/pro"
                     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
@@ -102,46 +133,60 @@ def write_xml_extn(path, version, ticket_number):
 
 
 </databaseChangeLog>""")
-    return xml_file
+        return xml_file
+    except OSError as e:
+        raise OSError(f"Failed to write XML extension file. Path: '{path}', Version: '{version}'. Error: {str(e)}") from e
 
 def update_dev_file(path, version, ticket_number):
-    now = datetime.now()
-    year_digit = 2 if now.year < 2026 else 3
-    dev_file = os.path.join(path, f"dev-{year_digit}.{now.month}.0.xml")
+    try:
+        # Validate that the path exists or can be created
+        if not path:
+            raise ValueError(f"Invalid path: path is empty")
+        
+        # Ensure the directory exists
+        os.makedirs(path, exist_ok=True)
+        
+        now = datetime.now()
+        year_digit = 2 if now.year < 2026 else 3
+        filename = f"dev-{year_digit}.{now.month}.0.xml"
+        dev_file = os.path.join(path, filename)
 
-    include_line = f'\n<!-- below are for {ticket_number} ADD DQ Rules-->\n<include file="data/load_validation_rules_data_ver_{version}.xml" relativeToChangelogFile="true"/>\n'
+        include_line = f'\n<!-- below are for {ticket_number} ADD DQ Rules-->\n<include file="data/load_validation_rules_data_ver_{version}.xml" relativeToChangelogFile="true"/>\n'
 
-    print(f"Updating Dev File: {dev_file}")
+        print(f"Updating Dev File: {dev_file}")
 
-    if not os.path.exists(dev_file):
-        print(f"Dev file does not exist. Creating new one: {dev_file}")
-        with open(dev_file, "w", encoding="utf-8") as f:
-            f.write(f"<databaseChangeLog> ... {include_line} ... </databaseChangeLog>")
-    else:
-        with open(dev_file, "r", encoding="utf-8") as f:
-            content = f.read()
-        if include_line not in content:
-            # Look for all <include .../> tags
-            include_pattern = r'(<include [^>]+/>\s*)'
-            matches = list(re.finditer(include_pattern, content))
-
-            if matches:
-                # Insert after last include
-                last = matches[-1]
-                insert_pos = last.end()
-                content = content[:insert_pos] + "\n" + include_line + "\n" + content[insert_pos:]
-            else:
-                # No <include>, insert before <changeSet author="${author}" id="configdb_ver_2_10_0">
-                change_set_pattern = r'(<changeSet\s+author="\$\{author\}"\s+id="configdb_ver_2_10_0"\s*>)'
-                match = re.search(change_set_pattern, content)
-                if match:
-                    insert_pos = match.start()
-                    content = content[:insert_pos] + include_line + "\n" + content[insert_pos:]
-                else:
-                    raise ValueError("Could not find target <changeSet> block for insertion.")
-            
+        if not os.path.exists(dev_file):
+            print(f"Dev file does not exist. Creating new one: {dev_file}")
             with open(dev_file, "w", encoding="utf-8") as f:
-                f.write(content)
+                f.write(f"<databaseChangeLog> ... {include_line} ... </databaseChangeLog>")
+        else:
+            with open(dev_file, "r", encoding="utf-8") as f:
+                content = f.read()
+            if include_line not in content:
+                # Look for all <include .../> tags
+                include_pattern = r'(<include [^>]+/>\s*)'
+                matches = list(re.finditer(include_pattern, content))
 
+                if matches:
+                    # Insert after last include
+                    last = matches[-1]
+                    insert_pos = last.end()
+                    content = content[:insert_pos] + "\n" + include_line + "\n" + content[insert_pos:]
+                else:
+                    # No <include>, insert before <changeSet author="${author}" id="configdb_ver_2_10_0">
+                    change_set_pattern = r'(<changeSet\s+author="\$\{author\}"\s+id="configdb_ver_2_10_0"\s*>)'
+                    match = re.search(change_set_pattern, content)
+                    if match:
+                        insert_pos = match.start()
+                        content = content[:insert_pos] + include_line + "\n" + content[insert_pos:]
+                    else:
+                        raise ValueError("Could not find target <changeSet> block for insertion.")
+                
+                with open(dev_file, "w", encoding="utf-8") as f:
+                    f.write(content)
 
-    return dev_file
+        return dev_file
+    except OSError as e:
+        raise OSError(f"Failed to update dev file. Path: '{path}', Filename: '{filename if 'filename' in locals() else 'N/A'}'. Error: {str(e)}") from e
+    except Exception as e:
+        raise Exception(f"Error updating dev file. Path: '{path}'. Error: {str(e)}") from e

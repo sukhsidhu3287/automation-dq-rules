@@ -24,7 +24,10 @@ def index():
             main(dq_rules_master_path, jira_description_path)
             return render_template("passed.html")
         except Exception as e:
-            return render_template("failed.html", error=str(e))
+            import traceback
+            error_details = traceback.format_exc()
+            print(f"Error occurred: {error_details}")
+            return render_template("failed.html", error=str(e) + "\n\n" + error_details)
 
     return render_template("index.html")
 
