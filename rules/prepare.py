@@ -51,6 +51,11 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
         enforcement_level = str(master_mapping_row.get("Enforcement Level", "")).upper()
         enforcement_level_id = None if enforcement_level == "NA" else \
             get_metadata_id("Enforcement_Level", enforcement_level, engine)
+        
+        if enforcement_level_id == 28:
+            error_warning_type_id = 31
+        else:
+            error_warning_type_id = 32
 
         enabled_flag = "Y" # yes for now for all
         
@@ -92,7 +97,7 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
             "sub_entity_type_id": sub_entity_id,
             "ingest_or_ui_id": ingest_or_ui_id,
             "enforcement_level_id": enforcement_level_id,
-            "error_warning_type_id": "",
+            "error_warning_type_id": error_warning_type_id,
             "dq_wkflw_ticket_ind": "TRUE"
         })
 
