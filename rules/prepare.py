@@ -74,7 +74,7 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
         else:
             rule_id = int(existing_rule_id["rule_id"].iloc[0])
 
-        rows.append({
+        row_to_append = {
             "rule_id": rule_id,
             "business_rule_id": master_mapping_row.get("RuleID"),
             "rule_category_id": rule_category_id,
@@ -99,7 +99,63 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
             "enforcement_level_id": enforcement_level_id,
             "error_warning_type_id": error_warning_type_id,
             "dq_wkflw_ticket_ind": "TRUE"
-        })
+        }
+        
+        # Check if rule already exists with the same data
+        check_existing_data = text("""
+            SELECT rule_id, business_rule_id, rule_category_id, rule_category_desc,
+                   rule_name, rule_desc, rule_type_id, entity_type_id, range_type_id,
+                   min, max, regex_pattern, sql_query, batch_error_message,
+                   ui_error_message_summary, ui_field_error_message, endorsement_date,
+                   enabled, user_name, sub_entity_type_id, ingest_or_ui_id,
+                   enforcement_level_id, error_warning_type_id, dq_wkflw_ticket_ind
+            FROM healthfirst_configdb.validation_rules
+            WHERE business_rule_id = :business_rule_id
+        """)
+        with engine.connect() as conn:
+            exists_df = pd.read_sql(check_existing_data, conn, params={"business_rule_id": master_mapping_row.get("RuleID")})
+        
+        append = True
+        if not exists_df.empty:
+            # Get the existing row data
+            existing_row = exists_df.iloc[0]
+            
+            # Compare each field (excluding rule_id as it's auto-generated for new records)
+            fields_to_compare = [
+                "business_rule_id", "rule_category_id", "rule_category_desc",
+                "rule_name", "rule_desc", "rule_type_id", "entity_type_id",
+                "range_type_id", "min", "max", "regex_pattern", "sql_query",
+                "batch_error_message", "ui_error_message_summary", "ui_field_error_message",
+                "endorsement_date", "enabled", "user_name", "sub_entity_type_id",
+                "ingest_or_ui_id", "enforcement_level_id", "error_warning_type_id",
+                "dq_wkflw_ticket_ind"
+            ]
+            
+            is_same = True
+            for field in fields_to_compare:
+                existing_value = existing_row.get(field)
+                new_value = row_to_append.get(field)
+                
+                # Handle None/NaN comparisons
+                if pd.isna(existing_value) and pd.isna(new_value):
+                    continue
+                elif pd.isna(existing_value) or pd.isna(new_value):
+                    is_same = False
+                    break
+                elif str(existing_value).strip().upper() != str(new_value).strip().upper():
+                    is_same = False
+                    break
+            
+            if is_same:
+                print(f"⚠️ Rule {rule['ruleid']} already exists with identical data. Skipping.")
+                append = False
+            else:
+                print(f"⚠️ Rule {rule['ruleid']} exists but with different data. Will update.")
+                append = True
+        
+        # Only append the row if append flag is True
+        if append:
+            rows.append(row_to_append)
 
 
     return pd.DataFrame(rows)
@@ -179,8 +235,8 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
             source_table_id_query = text(f"select distinct source_table_id from {tenant}_configdb.des_validation_rules_extn where source_owner_name = :source_owner_name")
             source_table_id = pd.read_sql(source_table_id_query, engine, params={"source_owner_name": rule.get("sourceownername", "").upper()})
             source_table_id = source_table_id.iloc[0,0] if not source_table_id.empty else None
-         # Check if the source owner name exists in the source_owner_master table
-        rows.append({
+        
+        row_to_append = {
             "rule_extn_id": rule_extn_id,
             "rule_id": rule_id,
             "task_id": None,
@@ -197,6 +253,54 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
             "entity_key": entity_key,
             "pdm_entity_id": pdm_entity_id,
             "source_owner_name": rule.get("sourceownername", "").upper()
-            })
+            }
+        
+        already_configured = text(f"""
+            SELECT rule_extn_id, rule_id, task_id, rule_applied_zone, hrpdm_table_id, 
+                   hrpdm_column_names, source_table_id, source_column_names, sql_query,
+                   active_flag, implmnt_type, implmnt_order, reference_codeset_id,
+                   entity_key, pdm_entity_id, source_owner_name
+            FROM {tenant}_configdb.des_validation_rules_extn WHERE rule_id = :rule_id
+        """)
+        with engine.connect() as conn:
+            exists_df = pd.read_sql(already_configured, conn, params={"rule_id": rule_id})
+        append = True
+        if not exists_df.empty:
+            # Get the existing row data
+            existing_row = exists_df.iloc[0]
+            
+            # Compare each field (excluding rule_extn_id as it's auto-generated)
+            fields_to_compare = [
+                "rule_id", "task_id", "rule_applied_zone", "hrpdm_table_id",
+                "hrpdm_column_names", "source_table_id", "source_column_names", 
+                "sql_query", "active_flag", "implmnt_type", "implmnt_order",
+                "reference_codeset_id", "entity_key", "pdm_entity_id", "source_owner_name"
+            ]
+            
+            is_same = True
+            for field in fields_to_compare:
+                existing_value = existing_row.get(field)
+                new_value = row_to_append.get(field)
+                
+                # Handle None/NaN comparisons
+                if pd.isna(existing_value) and pd.isna(new_value):
+                    continue
+                elif pd.isna(existing_value) or pd.isna(new_value):
+                    is_same = False
+                    break
+                elif str(existing_value).strip().upper() != str(new_value).strip().upper():
+                    is_same = False
+                    break
+            
+            if is_same:
+                print(f"⚠️ Rule {rule['ruleid']} already exists with identical data. Skipping.")
+                append = False
+            else:
+                print(f"⚠️ Rule {rule['ruleid']} exists but with different data. Will update.")
+                append = True
+        
+        # Only append the row if append flag is True
+        if append:
+            rows.append(row_to_append)
         
     return pd.DataFrame(rows)
