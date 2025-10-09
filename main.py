@@ -39,19 +39,17 @@ def main(dq_file_path, jira_file_path):
         path = TENANT_DATA_FOLDER_PATHS[tenant]
         dev_path = TENANT_DEV_FILE_PATHS[tenant]
         version = get_version_info_extn(path)
+        tenant_name = TENANT_NAMES[tenant]
         configure_rules_df_tenant_specific = configure_rules_df[configure_rules_df["tenant"].str.lower() == tenant.lower()]
 
          # Write CSV for tenant
         if not configure_rules_df_tenant_specific.empty:
-            print(f"Processing configuration for tenant '{tenant}'...")
-            dq_rules_extn = prepare_rules_extn(dq_rules_master, configure_rules_df_tenant_specific, engine, SHEET_NAME, csv_file)
+            dq_rules_extn = prepare_rules_extn(dq_rules_master, configure_rules_df_tenant_specific, tenant_name, engine, SHEET_NAME, csv_file)
             if not dq_rules_extn.empty:
-                extn_csv_file = write_csv(dq_rules_extn, TENANT_DATA_FOLDER_PATHS[tenant], version, extn=True)
-                print(f"Generated Extension CSV for tenant '{tenant}': {extn_csv_file}")
-            else:
-                print(f"No configuration changes for tenant '{tenant}'.")
-        csv_file = write_csv_extn(dq_rules_csv, path, version)  
-        xml_file = write_xml_extn(path, version, add_rules_df.iloc[0]["ticket"])
+                extn_csv_file = write_csv(dq_rules_extn, path, version)
+                print(f"Generated Extension CSV for tenant '{tenant_name}': {extn_csv_file}")
+                extn_xml_file = write_xml_extn(path, version, add_rules_df.iloc[0]["ticket"])
+                print(f"Generated Extension XML for tenant '{tenant_name}': {extn_xml_file}")
 
     print("All done!")
     return

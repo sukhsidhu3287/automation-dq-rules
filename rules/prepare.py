@@ -30,7 +30,7 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
         rule_category_id = get_metadata_id("Rule Category", rule_category, engine)
 
         #rule type
-        rule_type = str(rule.get("RuleType", "")).upper().strip()
+        rule_type = str(rule.get("ruletype")).upper().strip()
         rule_type_id = get_metadata_id("Rule Type", rule_type, engine)
 
         # Entity Type
@@ -100,23 +100,27 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
     return pd.DataFrame(rows)
 
 def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, sheet_map, dq_rules_csv):
-    max_id_query = f"SELECT COALESCE(MAX(rule_id), 0) AS max_rule_id FROM {tenant}.des_validation_rules_extn where upper(source_owner_name) = '{configure_rules_df.iloc[0]['SourceOwnerName'].upper()}'"
+    max_id_query = f"SELECT COALESCE(MAX(rule_id), 0) AS max_rule_id FROM {tenant}_configdb.des_validation_rules_extn where upper(source_owner_name) = '{configure_rules_df.iloc[0]['sourceownername'].upper()}'"
     with engine.connect() as conn:
         max_id_df =  pd.read_sql(max_id_query, conn)
         max_rule_extn_id = int(max_id_df["max_rule_id"].iloc[0])
-        id_exists = text(f"Select rule_extn_id from {tenant}.des_validation_rules_extn where rule_extn_id = {max_rule_extn_id +1}")
+        id_exists = text(f"Select rule_extn_id from {tenant}_configdb.des_validation_rules_extn where rule_extn_id = {max_rule_extn_id +1}")
         if id_exists is not None:
-            max_id_query = f"SELECT COALESCE(MAX(rule_extn_id), 0) AS max_rule_id FROM {tenant}.des_validation_rules_extn"
+            max_id_query = f"SELECT COALESCE(MAX(rule_extn_id), 0) AS max_rule_id FROM {tenant}_configdb.des_validation_rules_extn"
             max_rule_extn_id = int(pd.read_sql(max_id_query, conn).iloc[0,0])
     rows = []
     for _, rule in configure_rules_df.iterrows():
+        DQ_table_rule_id_query = text(f"Select rule_id from {tenant}_configdb.validation_rules where business_rule_id = :rule_id")
+        with engine.connect() as conn:
+            DQ_table_rule_id = pd.read_sql(DQ_table_rule_id_query, conn, params={"rule_id": rule["ruleid"]})
+        DQ_table_rule_id = int(DQ_table_rule_id.iloc[0,0])
 
         already_configured = text(f"""
-            SELECT 1 FROM {tenant}.des_validation_rules_extn WHERE business_rule_id = :rule_id
+            SELECT 1 FROM {tenant}_configdb.des_validation_rules_extn WHERE rule_id = :rule_id
         """)
         with engine.connect() as conn:
-            exists_df = pd.read_sql(already_configured, conn, params={"rule_id": rule["ruleid"]})
-        print(exists_df)
+            exists_df = pd.read_sql(already_configured, conn, params={"rule_id": DQ_table_rule_id})
+        
         if exists_df.empty:
             rule_extn_id = max_rule_extn_id + 1
             max_rule_extn_id += 1
@@ -136,7 +140,7 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
 
         master_mapping_row = master_mapping_row.iloc[0]
 
-        rule_id_query = f"Select rule_id from {tenant}.validation_rules where business_rule_id = :rule_id"
+        rule_id_query = text(f"Select rule_id from {tenant}_configdb.validation_rules where business_rule_id = :rule_id")
 
         with engine.connect() as conn:
             existing_rule_id = pd.read_sql(rule_id_query, conn, params={"rule_id": master_mapping_row.get("RuleID")})
@@ -152,23 +156,23 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
         else:
             rule_id = int(existing_rule_id["rule_id"].iloc[0])
         
-        rule_appied_zone = rule.get("ZoneApplied", "").upper()
+        rule_appied_zone = rule.get("zoneapplied", "").upper()
         target_table = master_mapping_row.get("Table Name", "").strip().upper()
-        hrpdm_table_id_query = text(f"select table_id from {tenant}.des_zone_table_list dztl where upper(dztl.table_name) = :target_table")
-        hrpdm_table_id = pd.read_sql(hrpdm_table_id_query, engine, params={target_table: target_table})
+        hrpdm_table_id_query = text(f"select table_id from {tenant}_configdb.des_zone_table_list dztl where upper(dztl.table_name) = :target_table")
+        hrpdm_table_id = pd.read_sql(hrpdm_table_id_query, engine, params={"target_table": target_table})
 
         entity_type = str(master_mapping_row.get("Entity", "")).strip().upper()
-        entity_key_query = text(f"select pdm_entity_id, entity_key_field_name  from {tenant}.pdm_entity_master where upper(entity_name) = :entity_type")
-        entity_key_query_result = pd.read_sql(entity_key_query, engine, params={entity_type: entity_type})
+        entity_key_query = text(f"select pdm_entity_id, entity_key_field_name  from {tenant}_configdb.pdm_entity_master where upper(entity_name) = :entity_type")
+        entity_key_query_result = pd.read_sql(entity_key_query, engine, params={"entity_type": entity_type})
         entity_key = entity_key_query_result.iloc[0,1]
         pdm_entity_id = entity_key_query_result.iloc[0,0]
 
-        if rule.get("SourceOwnerName", "").strip().lower == "hrp":
+        if rule.get("sourceownername", "").strip().lower() == "hrp":
                 print("we cannot automate this task as source owner name is HRP")
                 source_table_id = None
         else:
-            source_table_id_query = text(f"select distinct source_table_id from {tenant} FROM healthfirst_configdb.des_validation_rules_extn where source_owner_name = :source_owner_name")
-            source_table_id = pd.read_sql(source_table_id_query, engine, params={"source_owner_name": rule.get("SourceOwnerName", "").upper()})
+            source_table_id_query = text(f"select distinct source_table_id from {tenant}_configdb.des_validation_rules_extn where source_owner_name = :source_owner_name")
+            source_table_id = pd.read_sql(source_table_id_query, engine, params={"source_owner_name": rule.get("sourceownername", "").upper()})
             source_table_id = source_table_id.iloc[0,0] if not source_table_id.empty else None
          # Check if the source owner name exists in the source_owner_master table
         rows.append({
@@ -187,8 +191,7 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
             "reference_codeset_id": None,
             "entity_key": entity_key,
             "pdm_entity_id": pdm_entity_id,
-            "source_owner_name": rule.get("SourceOwnerName", "").upper()
+            "source_owner_name": rule.get("sourceownername", "").upper()
             })
         
-    print(pd.DataFrame(rows))
     return pd.DataFrame(rows)

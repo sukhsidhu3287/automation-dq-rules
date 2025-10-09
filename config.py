@@ -1,8 +1,12 @@
 import os
 from sqlalchemy import create_engine
 
-
+# NOTE: Update this path to match your local project structure
 COMMON_PATH = r"c:\Users\sukhd\Projects\HE_PDM_code\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
+
+# Validate that the base path exists - if not, provide helpful error message
+if not os.path.exists(COMMON_PATH):
+    print(f"WARNING: COMMON_PATH does not exist: {COMMON_PATH}")
 HF_PATH = os.path.join(COMMON_PATH, "tenants", "healthfirst")
 PEHP_PATH = os.path.join(COMMON_PATH, "tenants", "pehp")
 SUTTER_PATH = os.path.join(COMMON_PATH, "tenants", "sutter")
