@@ -27,7 +27,7 @@ def index():
             import traceback
             error_details = traceback.format_exc()
             print(f"Error occurred: {error_details}")
-            return render_template("failed.html", error=str(e) + "\n\n" + error_details)
+            return render_template("failed.html", error=str(e) + "\n")
 
     return render_template("index.html")
 

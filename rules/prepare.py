@@ -1,7 +1,7 @@
 from sqlalchemy import text
 import re
 import pandas as pd
-from .metadata import get_metadata_id, get_hrp_source_table_id
+from .metadata import get_metadata_id
 
 def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
     max_id_query = f"SELECT COALESCE(MAX(rule_id), 0) AS max_rule_id FROM healthfirst_configdb.validation_rules"
@@ -230,7 +230,7 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
         entity_key_query = text(f"select pdm_entity_id, entity_key_field_name  from {tenant}_configdb.pdm_entity_master where upper(entity_name) = :entity_type")
         entity_key_query_result = pd.read_sql(entity_key_query, engine, params={"entity_type": entity_type})
         entity_key = entity_key_query_result.iloc[0,1]
-        pdm_entity_id = entity_key_query_result.iloc[0,0]
+        pdm_entity_id = int(entity_key_query_result.iloc[0,0])
 
         if rule.get("sourceownername", "").strip().lower() == "hrp":
             # source_table_id = get_hrp_source_table_id(engine, tenant, entity_type, target_table)

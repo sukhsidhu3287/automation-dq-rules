@@ -62,5 +62,4 @@ def get_hrp_source_table_id(engine, tenant, entity_type, hepdm_table):
         where upper(hrpdm_table_name) like '%{hepdm_table}%'
         and cd.source_name ='HRP'and  upper(entity_name) = '{entity_type}'
         and q"""
-    
     return pd.read_sql(query, engine)
