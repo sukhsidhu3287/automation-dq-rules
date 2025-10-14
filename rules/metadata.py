@@ -53,4 +53,14 @@ def get_metadata_id(metadata_set, metadata_value, engine):
         df = pd.read_sql_query(query, conn, params=(metadata_set, metadata_value))
     return df.iloc[0,0] if not df.empty else None
 
+def get_hrp_source_table_id(engine, tenant, entity_type, hepdm_table):
+    query = f"""select source_table_id from
+        {tenant}_configdb.cdi_mapping_table cmt
+        join
+       {tenant}_configdb.cdi_definition cd
+        on cmt.ingestion_id= cd.ingestion_id
+        where upper(hrpdm_table_name) like '%{hepdm_table}%'
+        and cd.source_name ='HRP'and  upper(entity_name) = '{entity_type}'
+        and q"""
     
+    return pd.read_sql(query, engine)

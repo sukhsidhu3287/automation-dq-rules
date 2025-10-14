@@ -1,7 +1,7 @@
 from sqlalchemy import text
 import re
 import pandas as pd
-from .metadata import get_metadata_id
+from .metadata import get_metadata_id, get_hrp_source_table_id
 
 def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
     max_id_query = f"SELECT COALESCE(MAX(rule_id), 0) AS max_rule_id FROM healthfirst_configdb.validation_rules"
@@ -229,8 +229,8 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
         pdm_entity_id = entity_key_query_result.iloc[0,0]
 
         if rule.get("sourceownername", "").strip().lower() == "hrp":
-                print("we cannot automate this task as source owner name is HRP")
-                source_table_id = None
+            # source_table_id = get_hrp_source_table_id(engine, tenant, entity_type, target_table)
+            source_table_id = None
         else:
             source_table_id_query = text(f"select distinct source_table_id from {tenant}_configdb.des_validation_rules_extn where source_owner_name = :source_owner_name")
             source_table_id = pd.read_sql(source_table_id_query, engine, params={"source_owner_name": rule.get("sourceownername", "").upper()})

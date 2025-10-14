@@ -50,6 +50,8 @@ def main(dq_file_path, jira_file_path):
                 print(f"Generated Extension CSV for tenant '{tenant_name}': {extn_csv_file}")
                 extn_xml_file = write_xml_extn(path, version, add_rules_df.iloc[0]["ticket"])
                 print(f"Generated Extension XML for tenant '{tenant_name}': {extn_xml_file}")
+                dev_file = update_dev_file(dev_path, version, add_rules_df.iloc[0]["ticket"])
+                print(f"Updated Dev File for tenant '{tenant_name}': {dev_file}")
 
     print("All done!")
     return

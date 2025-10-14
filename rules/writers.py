@@ -155,7 +155,16 @@ def update_dev_file(path, version, ticket_number):
 
         if not os.path.exists(dev_file):
             with open(dev_file, "w", encoding="utf-8") as f:
-                f.write(f"<databaseChangeLog> ... {include_line} ... </databaseChangeLog>")
+                f.write(f"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+                <databaseChangeLog  xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+                                                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                                                    http://www.liquibase.org/xml/ns/pro 
+                                                    http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+                {include_line}
+                </databaseChangeLog>
+                """)
         else:
             with open(dev_file, "r", encoding="utf-8") as f:
                 content = f.read()
