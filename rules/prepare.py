@@ -161,14 +161,18 @@ def prepare_rules(dq_rules_master, add_rules_df, engine, sheet_map):
     return pd.DataFrame(rows)
 
 def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, sheet_map, dq_rules_csv):
-    max_id_query = f"SELECT COALESCE(MAX(rule_id), 0) AS max_rule_id FROM {tenant}_configdb.des_validation_rules_extn where upper(source_owner_name) = '{configure_rules_df.iloc[0]['sourceownername'].upper()}'"
+    max_id_query = f"SELECT COALESCE(MAX(rule_extn_id), 0) AS max_rule_id FROM {tenant}_configdb.des_validation_rules_extn where upper(source_owner_name) = '{configure_rules_df.iloc[0]['sourceownername'].upper()}'"
     with engine.connect() as conn:
         max_id_df =  pd.read_sql(max_id_query, conn)
         max_rule_extn_id = int(max_id_df["max_rule_id"].iloc[0])
-        id_exists = text(f"Select rule_extn_id from {tenant}_configdb.des_validation_rules_extn where rule_extn_id = {max_rule_extn_id +1}")
-        if id_exists is not None:
+
+        check_query = f"Select rule_extn_id from {tenant}_configdb.des_validation_rules_extn where rule_extn_id = {max_rule_extn_id +1}"
+        id_exists = pd.read_sql(check_query, conn)
+
+        if id_exists.iloc[0, 0] > 0:
             max_id_query = f"SELECT COALESCE(MAX(rule_extn_id), 0) AS max_rule_id FROM {tenant}_configdb.des_validation_rules_extn"
             max_rule_extn_id = int(pd.read_sql(max_id_query, conn).iloc[0,0])
+
     rows = []
     for _, rule in configure_rules_df.iterrows():
         DQ_table_rule_id_query = text(f"Select rule_id from {tenant}_configdb.validation_rules where business_rule_id = :rule_id")
