@@ -169,7 +169,7 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
         check_query = f"Select rule_extn_id from {tenant}_configdb.des_validation_rules_extn where rule_extn_id = {max_rule_extn_id +1}"
         id_exists = pd.read_sql(check_query, conn)
 
-        if id_exists.iloc[0, 0] > 0:
+        if not id_exists.empty:
             max_id_query = f"SELECT COALESCE(MAX(rule_extn_id), 0) AS max_rule_id FROM {tenant}_configdb.des_validation_rules_extn"
             max_rule_extn_id = int(pd.read_sql(max_id_query, conn).iloc[0,0])
 
