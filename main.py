@@ -46,7 +46,7 @@ def main(dq_file_path, jira_file_path):
         if not configure_rules_df_tenant_specific.empty:
             dq_rules_extn = prepare_rules_extn(dq_rules_master, configure_rules_df_tenant_specific, tenant_name, engine, SHEET_NAME, csv_file)
             if not dq_rules_extn.empty:
-                extn_csv_file = write_csv(dq_rules_extn, path, version)
+                extn_csv_file = write_csv_extn(dq_rules_extn, path, version)
                 print(f"Generated Extension CSV for tenant '{tenant_name}': {extn_csv_file}")
                 extn_xml_file = write_xml_extn(path, version, add_rules_df.iloc[0]["ticket"])
                 print(f"Generated Extension XML for tenant '{tenant_name}': {extn_xml_file}")
