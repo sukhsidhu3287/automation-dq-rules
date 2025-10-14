@@ -246,7 +246,7 @@ def prepare_rules_extn(dq_rules_master, configure_rules_df, tenant, engine, shee
             "task_id": None,
             "rule_applied_zone": rule_appied_zone,
             "hrpdm_table_id": hrpdm_table_id.iloc[0,0] if not hrpdm_table_id.empty else None,
-            "hrpdm_column_names": master_mapping_row.get("Column Name", "").strip().upper(),
+            "hrpdm_column_names": master_mapping_row.get("Column Name ", "").strip().upper(),
             "source_table_id": source_table_id,
             "source_column_names": None,
             "sql_query":None,
