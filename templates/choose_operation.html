@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Operation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #fff;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 50px;
+            font-size: 1.1em;
+        }
+        .success-message {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .option-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 50px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .option-card.add-update {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        .option-card.configure {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+        .option-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        .option-title {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .option-desc {
+            font-size: 1em;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+        .file-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #495057;
+        }
+        @media (max-width: 768px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ File Uploaded Successfully!</h1>
+        <p class="subtitle">Choose your operation</p>
+
+        <div class="file-info">
+            <strong>📊 Master File:</strong> {{ filename }}
+        </div>
+
+        <div class="options">
+            <a href="/add-update-rule" class="option-card add-update">
+                <div class="option-icon">📝</div>
+                <div class="option-title">Add/Update DQ Rule</div>
+                <div class="option-desc">Create new rules or update existing validation rules</div>
+            </a>
+            
+            <a href="/configure-rule" class="option-card configure">
+                <div class="option-icon">⚙️</div>
+                <div class="option-title">Configure DQ Rule</div>
+                <div class="option-desc">Configure rules for specific tenants and zones</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+

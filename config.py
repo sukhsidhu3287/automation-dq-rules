@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import create_engine
 
-# NOTE: Update this path to match your local project structure
+# Update this path to match your local project structure
 COMMON_PATH = r"c:\Users\sukhd\Projects\HE_PDM_code\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs"
 
 # Validate that the base path exists - if not, provide helpful error message
@@ -21,28 +21,18 @@ DB = "postgres"
 
 ENGINE = create_engine(f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
 
+
 TENANT_DEV_FILE_PATHS = {
-    "c": COMMON_PATH,
-    "hf": HF_PATH,
-    "p": PEHP_PATH,
-    "s": SUTTER_PATH,
-    "hs": HSYNC_PATH,
+    "common": COMMON_PATH,
+    "healthfirst": HF_PATH,
+    "pehp": PEHP_PATH,
+    "sutter": SUTTER_PATH,
+    "healthsync": HSYNC_PATH,
 }
 
 TENANT_DATA_FOLDER_PATHS = {
     k: os.path.join(v, "data") for k, v in TENANT_DEV_FILE_PATHS.items()
 }
 
-TENANT_NAMES = {
-    "hf": "healthfirst",
-    "p": "pehp",
-    "s": "sutter",
-    "hs": "healthsync",
-}
-
-SHEET_NAME = {
-    "org": "Organization",
-    "prv": "Provider Network",
-    "pract": "Practitioner",
-    "network": "Network",
-}
+# Note: Sheet names are now auto-detected based on Rule IDs in the master file
+# No need for manual SHEET_NAME mapping anymore

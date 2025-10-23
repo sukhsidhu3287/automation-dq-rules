@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add/Update DQ Rules</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .back-link {
+            color: #11998e;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border: 2px solid #11998e;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            background: #11998e;
+            color: white;
+        }
+        .ticket-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .ticket-section label {
+            font-weight: 600;
+            color: #1976d2;
+            margin-right: 10px;
+        }
+        .ticket-section input {
+            padding: 10px;
+            border: 2px solid #90caf9;
+            border-radius: 6px;
+            font-size: 1em;
+            width: 300px;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        thead {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #11998e;
+            box-shadow: 0 0 0 2px rgba(17, 153, 142, 0.1);
+        }
+        textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        .row-number {
+            background: #e9ecef;
+            font-weight: 600;
+            text-align: center;
+            color: #495057;
+        }
+        .actions-cell {
+            text-align: center;
+        }
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .btn-remove:hover {
+            background: #c82333;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-add {
+            background: #28a745;
+            color: white;
+        }
+        .btn-add:hover {
+            background: #218838;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 15px 50px;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
+        }
+        .required {
+            color: #dc3545;
+        }
+        .info-banner {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <div>
+                <h1>📝 Add/Update DQ Rules</h1>
+                <p style="color: #6c757d;">Fill in the table below with rule information</p>
+            </div>
+            <a href="/choose-operation" class="back-link">← Back</a>
+        </div>
+
+
+        <form method="POST" id="ruleForm">
+            <div class="ticket-section">
+                <label for="ticket">Ticket Number <span class="required">*</span></label>
+                <input type="text" id="ticket" name="ticket" placeholder="e.g., PDM-12345" required>
+            </div>
+
+            <div class="table-container">
+                <table id="rulesTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th style="width: 120px;">Rule ID <span class="required">*</span></th>
+                            <th style="width: 250px;">Description <span class="required">*</span></th>
+                            <th style="width: 150px;">Rule Type <span class="required">*</span></th>
+                            <th style="width: 80px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rulesTableBody">
+                        <tr data-row="1">
+                            <td class="row-number">1</td>
+                            <td><input type="text" name="rule_id[]" placeholder="DQ1442" required></td>
+                            <td><textarea name="description[]" placeholder="Enter rule description" required></textarea></td>
+                            <td>
+                                <select name="rule_type[]" required>
+                                    <option value="">Select</option>
+                                    <option value="MANDATORY">MANDATORY</option>
+                                    <option value="RANGE">RANGE</option>
+                                    <option value="PATTERN">PATTERN</option>
+                                    <option value="QUERY">QUERY</option>
+                                    <option value="ENRICHMENT">ENRICHMENT</option>
+                                    <option value="FORMULA">FORMULA</option>
+                                    <option value="AGGREGATION_QUERY">AGGREGATION_QUERY</option>
+                                    <option value="AGGREGATION_MANDATORY">AGGREGATION_MANDATORY</option>
+                                    <option value="PRIMARY">PRIMARY</option>
+                                    <option value="MINIMUM_REQUIRED_DATA">MINIMUM_REQUIRED_DATA</option>
+                                    <option value="OVERLAPPING_DATES">OVERLAPPING_DATES</option>
+                                    <option value="MANDATORY_ALL_PERIODS">MANDATORY_ALL_PERIODS</option>
+                                </select>
+                            </td>
+                            <td class="actions-cell">
+                                <button type="button" class="btn-remove" onclick="removeRow(this)" disabled>Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn-add" onclick="addRow()">+ Add Row</button>
+                <button type="submit" class="btn-submit">🚀 Submit All Rules</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let rowCount = 1;
+
+        function addRow() {
+            rowCount++;
+            const tbody = document.getElementById('rulesTableBody');
+            const newRow = document.createElement('tr');
+            newRow.setAttribute('data-row', rowCount);
+            newRow.innerHTML = `
+                <td class="row-number">${rowCount}</td>
+                <td><input type="text" name="rule_id[]" placeholder="DQ1442" required></td>
+                <td><textarea name="description[]" placeholder="Enter rule description" required></textarea></td>
+                <td>
+                    <select name="rule_type[]" required>
+                        <option value="">Select</option>
+                        <option value="MANDATORY">MANDATORY</option>
+                        <option value="RANGE">RANGE</option>
+                        <option value="PATTERN">PATTERN</option>
+                        <option value="QUERY">QUERY</option>
+                        <option value="ENRICHMENT">ENRICHMENT</option>
+                        <option value="FORMULA">FORMULA</option>
+                        <option value="AGGREGATION_QUERY">AGGREGATION_QUERY</option>
+                        <option value="AGGREGATION_MANDATORY">AGGREGATION_MANDATORY</option>
+                        <option value="PRIMARY">PRIMARY</option>
+                        <option value="MINIMUM_REQUIRED_DATA">MINIMUM_REQUIRED_DATA</option>
+                        <option value="OVERLAPPING_DATES">OVERLAPPING_DATES</option>
+                        <option value="MANDATORY_ALL_PERIODS">MANDATORY_ALL_PERIODS</option>
+                    </select>
+                </td>
+                <td class="actions-cell">
+                    <button type="button" class="btn-remove" onclick="removeRow(this)">Remove</button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+            updateRemoveButtons();
+        }
+
+        function removeRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+            updateRowNumbers();
+            updateRemoveButtons();
+        }
+
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#rulesTableBody tr');
+            rows.forEach((row, index) => {
+                row.querySelector('.row-number').textContent = index + 1;
+                row.setAttribute('data-row', index + 1);
+            });
+            rowCount = rows.length;
+        }
+
+        function updateRemoveButtons() {
+            const rows = document.querySelectorAll('#rulesTableBody tr');
+            rows.forEach((row, index) => {
+                const removeBtn = row.querySelector('.btn-remove');
+                removeBtn.disabled = rows.length === 1;
+            });
+        }
+
+    </script>
+</body>
+</html>
+

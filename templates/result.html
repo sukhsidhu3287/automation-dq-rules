@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Success' if success else 'Error' }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, {% if success %}#11998e 0%, #38ef7d 100%{% else %}#e74c3c 0%, #c0392b 100%{% endif %});
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: #fff;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        .message {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .details h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .details ul {
+            list-style: none;
+            padding: 0;
+        }
+        .details li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            color: #555;
+        }
+        .details li:last-child {
+            border-bottom: none;
+        }
+        .error-details {
+            background: #fee;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+            border-left: 4px solid #e74c3c;
+        }
+        .error-details pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #c0392b;
+            font-size: 0.9em;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .btn-home {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-back {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-back:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if success %}
+            <div class="icon">✅</div>
+            <h1>Success!</h1>
+            <p class="message">{{ message }}</p>
+            
+            {% if files %}
+            <div class="details">
+                <h3>Generated Files:</h3>
+                <ul>
+                    {% for file in files %}
+                    <li>{{ file }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="icon">❌</div>
+            <h1>Error Occurred</h1>
+            <p class="message">{{ message }}</p>
+            
+            {% if error_details %}
+            <div class="error-details">
+                <pre>{{ error_details }}</pre>
+            </div>
+            {% endif %}
+        {% endif %}
+        
+        <div class="button-group">
+            <a href="/" class="btn btn-home">🏠 Back to Home</a>
+            {% if not success %}
+            <a href="javascript:history.back()" class="btn btn-back">↩️ Try Again</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+
