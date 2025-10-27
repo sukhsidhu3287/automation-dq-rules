@@ -1,0 +1,28 @@
+2025-10-27 12:09:00,292 - WARNING  - ⚠️ Metadata not found: Ingest_Or_UI = INGEST+UI
+==============================================
+2025-10-27 12:09:00,159 - INFO     - PREPARING ADD/UPDATE RULES
+2025-10-27 12:09:00,159 - INFO     - ============================================================
+2025-10-27 12:09:00,274 - INFO     - 📊 Current max rule_id in database: 552
+2025-10-27 12:09:00,274 - INFO     - 
+🔄 Processing Rule #1: DQ1221
+2025-10-27 12:09:00,274 - INFO     - ------------------------------------------------------------
+2025-10-27 12:09:00,274 - INFO     - ✓ Found in sheet: 'Organization'
+2025-10-27 12:09:00,296 - INFO     - ✓ Using existing rule_id: 189
+2025-10-27 12:09:00,301 - INFO     - ✓ Rule data prepared for processing
+2025-10-27 12:09:00,302 - INFO     - 
+2025-10-27 12:09:00,302 - INFO     - ============================================================
+2025-10-27 12:09:00,302 - INFO     - ✅ Prepared 1 rule(s) for add/update
+2025-10-27 12:09:00,303 - INFO     - ============================================================2025-10-27 12:09:00,316 - INFO     - ✅ Successfully processed 1 rule(s)
+2025-10-27 12:09:00,316 - INFO     - ======================================================================
+��───────────────────────────────────────────────────────────
+2025-10-27 12:09:00,158 - INFO     - 📍 Target: Common repository
+2025-10-27 12:09:00,158 - INFO     - 📌 Version: 2_10_10
+2025-10-27 12:09:00,158 - INFO     - 🎫 Ticket: PDM-12345
+2025-10-27 12:09:00,309 - INFO     - 📄 Generated CSV: c:\Users\sukhd\Projects\HE_PDM_code\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs\data\load_validation_rules_data_ver_2_10_10.csv
+2025-10-27 12:09:00,310 - INFO     - 📄 Generated XML: c:\Users\sukhd\Projects\HE_PDM_code\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs\data\load_validation_rules_data_ver_2_10_10.xml
+2025-10-27 12:09:00,316 - INFO     - 📄 Updated Dev File: c:\Users\sukhd\Projects\HE_PDM_code\hrp.pdm.schema.service\src\main\resources\db\changelog\configdb\changelogs\dev-2.10.0.xml
+2025-10-27 12:09:00,316 - INFO     - ======================================================================
+2025-10-27 12:09:00,316 - INFO     - ✅ WORKFLOW: ADD_UPDATE COMPLETE
+2025-10-27 12:09:00,316 - INFO     - ======================================================================
+2025-10-27 12:09:00,316 - INFO     - 
+2025-10-27 12:09:00,316 - INFO     - 📊 Total files generated: 3

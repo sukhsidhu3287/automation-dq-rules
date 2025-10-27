@@ -128,15 +128,9 @@ def _extract_config_data(master_row, config, rule_id, rule_extn_id, zone, source
     target_table = extract_column_value(master_row, "TableName", "Table Name").upper()
     hrpdm_table_id = get_hrpdm_table_id(engine, target_table, zone, tenant)
     
-    if hrpdm_table_id is None:
-        return None
-    
     # Get entity information
     entity_type = extract_column_value(master_row, "Entity").upper()
     pdm_entity_id, entity_key = get_entity_info(engine, entity_type, tenant)
-    
-    if pdm_entity_id is None or entity_key is None:
-        return None
     
     # Get source table ID (only for non-HRP)
     if source_owner == "HRP":
@@ -151,6 +145,10 @@ def _extract_config_data(master_row, config, rule_id, rule_extn_id, zone, source
         "Column Name"
     ).upper()
     
+    if zone == "RAW":
+        hrpdm_table_id = None
+        source_table_id = hrpdm_table_id
+        
     # Build complete configuration data
     return {
         "rule_extn_id": rule_extn_id,

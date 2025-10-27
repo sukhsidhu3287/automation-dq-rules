@@ -33,7 +33,7 @@ def get_metadata_id(metadata_type, metadata_value, engine):
     query = text("""
         SELECT metadata_id 
         FROM healthfirst_configdb.validation_rule_metadata
-        WHERE UPPER(metadata_type) = UPPER(:metadata_type) 
+        WHERE UPPER(metadata_set) = UPPER(:metadata_type) 
         AND UPPER(metadata_value) = UPPER(:metadata_value)
     """)
     

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 import os
 import pandas as pd
 from main import main_ui_workflow
@@ -40,10 +40,6 @@ def upload_master():
         
         log_file_operation(logger, "Uploaded DQ Rules Master", DQ_MASTER_FILE)
         
-        # Store in session as well
-        session['dq_master_uploaded'] = True
-        session['dq_master_filename'] = dq_file.filename
-        
         logger.info("✅ DQ Rules Master file uploaded successfully")
         log_separator(logger, "=", 70)
         
@@ -63,7 +59,7 @@ def choose_operation():
     if not DQ_MASTER_FILE or not os.path.exists(DQ_MASTER_FILE):
         return redirect(url_for('landing'))
     
-    filename = session.get('dq_master_filename', 'dq_rules_master.xlsx')
+    filename = 'dq_rules_master.xlsx'
     return render_template("choose_operation.html", filename=filename)
 
 @app.route("/add-update-rule", methods=["GET", "POST"])

@@ -198,7 +198,6 @@
                         <tr>
                             <th style="width: 50px;">#</th>
                             <th style="width: 120px;">Rule ID <span class="required">*</span></th>
-                            <th style="width: 250px;">Description <span class="required">*</span></th>
                             <th style="width: 150px;">Rule Type <span class="required">*</span></th>
                             <th style="width: 80px;">Actions</th>
                         </tr>
@@ -207,7 +206,6 @@
                         <tr data-row="1">
                             <td class="row-number">1</td>
                             <td><input type="text" name="rule_id[]" placeholder="DQ1442" required></td>
-                            <td><textarea name="description[]" placeholder="Enter rule description" required></textarea></td>
                             <td>
                                 <select name="rule_type[]" required>
                                     <option value="">Select</option>
@@ -251,7 +249,6 @@
             newRow.innerHTML = `
                 <td class="row-number">${rowCount}</td>
                 <td><input type="text" name="rule_id[]" placeholder="DQ1442" required></td>
-                <td><textarea name="description[]" placeholder="Enter rule description" required></textarea></td>
                 <td>
                     <select name="rule_type[]" required>
                         <option value="">Select</option>
