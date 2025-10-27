@@ -88,7 +88,6 @@ def add_update_rule():
         
         # Parse rules from table form (arrays)
         rule_ids = request.form.getlist("rule_id[]")
-        descriptions = request.form.getlist("description[]")
         rule_types = request.form.getlist("rule_type[]")
         
         # Build rules list
@@ -102,7 +101,6 @@ def add_update_rule():
                 "ticket": ticket,
                 "tenant": "common",  # Always common for add/update
                 "ruleid": rule_ids[i].strip(),
-                "description": descriptions[i].strip(),
                 "action": "add",  # Backend will determine if add or update automatically
                 "ruletype": rule_types[i],
                 "entity": None,  # Not needed anymore

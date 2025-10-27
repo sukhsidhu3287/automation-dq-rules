@@ -27,6 +27,8 @@ def get_rule_from_master(dq_rules_master, rule_id):
 
 def get_metadata_id(metadata_type, metadata_value, engine):
     # Handle empty or NA values
+    if metadata_type == "Ingest_Or_UI":
+        metadata_type = "BOTH"
     if not metadata_value or str(metadata_value).upper() in ['NA', 'NAN', 'NONE', '']:
         return None
     

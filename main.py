@@ -5,7 +5,7 @@ from rules.helper import get_version_info, get_version_info_extn
 from rules.add_update import prepare_add_update_rules
 from rules.configure import prepare_configure_rules
 from rules.writers import write_csv, write_xml, update_dev_file, write_csv_extn, write_xml_extn
-from rules.logger import setup_logger, log_separator, log_section_start, log_section_end, log_subsection, log_file_operation
+from rules.logger import setup_logger, log_section_start, log_subsection, log_file_operation
 
 engine = ENGINE
 logger = setup_logger("main")
@@ -104,7 +104,6 @@ def main_ui_workflow(dq_file_path, rules_df, workflow_type):
     else:
         raise ValueError(f"Unknown workflow type: {workflow_type}")
     
-    log_section_end(logger, f"Workflow: {workflow_type.upper()}")
     logger.info(f"📊 Total files generated: {len(generated_files)}")
     
     return generated_files

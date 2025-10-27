@@ -64,29 +64,21 @@ def setup_logger(name="dq_automation"):
     return logger
 
 
-def log_separator(logger, char="=", length=70):
+def log_separator(logger, char="-", length=40):
     logger.info(char * length)
 
 
 def log_section_start(logger, title):
     logger.info("")
-    log_separator(logger, "=", 70)
     logger.info(title.upper())
-    log_separator(logger, "=", 70)
-
-
-def log_section_end(logger, title):
-    log_separator(logger, "=", 70)
-    logger.info(f"✅ {title.upper()} COMPLETE")
-    log_separator(logger, "=", 70)
-    logger.info("")
+    log_separator(logger, "-", 40)
 
 
 def log_subsection(logger, title):
     logger.info("")
-    logger.info("─" * 60)
+    logger.info("─" * 40)
     logger.info(title)
-    logger.info("─" * 60)
+    logger.info("─" * 40)
 
 
 def log_file_operation(logger, operation, filepath):
