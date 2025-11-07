@@ -49,7 +49,7 @@
         }
         .options {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 30px;
             margin-top: 40px;
         }
@@ -73,6 +73,9 @@
         .option-card.configure {
             background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
         }
+        .option-card.compare {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
         .option-icon {
             font-size: 4em;
             margin-bottom: 20px;
@@ -94,6 +97,11 @@
             margin-bottom: 20px;
             color: #495057;
         }
+        @media (max-width: 1024px) {
+            .options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
         @media (max-width: 768px) {
             .options {
                 grid-template-columns: 1fr;
@@ -103,13 +111,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>✅ File Uploaded Successfully!</h1>
-        <p class="subtitle">Choose your operation</p>
-
-        <div class="file-info">
-            <strong>📊 Master File:</strong> {{ filename }}
-        </div>
-
+        <h1>Choose your operation</h1>
         <div class="options">
             <a href="/add-update-rule" class="option-card add-update">
                 <div class="option-icon">📝</div>
@@ -121,6 +123,12 @@
                 <div class="option-icon">⚙️</div>
                 <div class="option-title">Configure DQ Rule</div>
                 <div class="option-desc">Configure rules for specific tenants and zones</div>
+            </a>
+            
+            <a href="/compare-versions" class="option-card compare">
+                <div class="option-icon">🔍</div>
+                <div class="option-title">Compare File Versions</div>
+                <div class="option-desc">Track changes between two file versions</div>
             </a>
         </div>
     </div>

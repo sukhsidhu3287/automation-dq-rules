@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare File Versions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .back-link {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s ease;
+        }
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+        .content {
+            padding: 40px;
+        }
+        .split-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .version-panel {
+            display: flex;
+            flex-direction: column;
+        }
+        .version-label {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .version-label .icon {
+            font-size: 1.5em;
+        }
+        textarea {
+            width: 100%;
+            min-height: 500px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #f093fb;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .compare-btn, .clear-btn {
+            padding: 18px 60px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .compare-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .compare-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .compare-btn:active {
+            transform: translateY(0);
+        }
+        .clear-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .clear-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .info-text {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+        @media (max-width: 1024px) {
+            .split-container {
+                grid-template-columns: 1fr;
+            }
+            textarea {
+                min-height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" style="position: relative;">
+            <a href="/choose-operation" class="back-link">← Back</a>
+            <h1>🔍 Compare File Versions</h1>
+            <p>Track changes between two versions of your code</p>
+        </div>
+        
+        <div class="content">
+            <p class="info-text">
+                Paste or type your code in both text areas below, then click Compare to see the differences
+            </p>
+            
+            <form method="POST" action="/compare-versions">
+                <div class="split-container">
+                    <div class="version-panel">
+                        <label class="version-label">
+                            <span class="icon">📄</span>
+                            Version 1 (Original)
+                        </label>
+                        <textarea 
+                            name="version1" 
+                            placeholder="Paste or type Version 1 code here..."
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div class="version-panel">
+                        <label class="version-label">
+                            <span class="icon">📝</span>
+                            Version 2 (Modified)
+                        </label>
+                        <textarea 
+                            name="version2" 
+                            placeholder="Paste or type Version 2 code here..."
+                            required
+                        ></textarea>
+                    </div>
+                </div>
+                
+                <div class="button-container">
+                    <button type="submit" class="compare-btn">
+                        Compare Versions
+                    </button>
+                    <button type="button" class="clear-btn" onclick="clearTextAreas()">
+                        Clear All
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function clearTextAreas() {
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.value = '';
+            });
+        }
+    </script>
+</body>
+</html>
+

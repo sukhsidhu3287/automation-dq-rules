@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from main import main_ui_workflow
 from rules.logger import setup_logger, log_separator, log_file_operation, log_error, log_section_start, reset_log_file
+from code_comapre.compare_test import compare_for_ui
 import traceback
 
 app = Flask(__name__)
@@ -16,12 +17,39 @@ logger = setup_logger("app")
 # Store the DQ master file path in session
 DQ_MASTER_FILE = None
 
+def get_master_file_path():
+    """Check if a master file exists in uploads folder"""
+    global DQ_MASTER_FILE
+    
+    # If already set in memory and exists, return it
+    if DQ_MASTER_FILE and os.path.exists(DQ_MASTER_FILE):
+        return DQ_MASTER_FILE
+    
+    # Check if file exists in uploads folder
+    default_path = os.path.join(UPLOAD_FOLDER, "dq_rules_master.xlsx")
+    if os.path.exists(default_path):
+        DQ_MASTER_FILE = default_path
+        return DQ_MASTER_FILE
+    
+    return None
+
 @app.route("/", methods=["GET"])
 def landing():
-    return render_template("upload_master.html")
+    # Landing page is now choose_operation
+    # Check if master file already exists
+    master_file = get_master_file_path()
+    if master_file:
+        filename = os.path.basename(master_file)
+        return render_template("choose_operation.html", filename=filename)
+    else:
+        # If no master file, show upload page
+        return render_template("upload_master.html")
 
-@app.route("/upload-master", methods=["POST"])
+@app.route("/upload-master", methods=["GET", "POST"])
 def upload_master():
+    if request.method == "GET":
+        return render_template("upload_master.html")
+    
     try:
         log_section_start(logger, "DQ Rules Master Upload")
         
@@ -56,17 +84,19 @@ def upload_master():
 
 @app.route("/choose-operation", methods=["GET"])
 def choose_operation():
-    if not DQ_MASTER_FILE or not os.path.exists(DQ_MASTER_FILE):
-        return redirect(url_for('landing'))
+    master_file = get_master_file_path()
+    if not master_file:
+        return redirect(url_for('upload_master'))
     
-    filename = 'dq_rules_master.xlsx'
+    filename = os.path.basename(master_file)
     return render_template("choose_operation.html", filename=filename)
 
 @app.route("/add-update-rule", methods=["GET", "POST"])
 def add_update_rule():
     if request.method == "GET":
         # Check if master file is uploaded
-        if not DQ_MASTER_FILE or not os.path.exists(DQ_MASTER_FILE):
+        master_file = get_master_file_path()
+        if not master_file:
             return redirect(url_for('landing'))
         return render_template("add_update_table.html")
     
@@ -75,7 +105,8 @@ def add_update_rule():
         reset_log_file()
         
         # Check if master file is uploaded
-        if not DQ_MASTER_FILE or not os.path.exists(DQ_MASTER_FILE):
+        master_file = get_master_file_path()
+        if not master_file:
             log_error(logger, "DQ Rules Master file not found")
             return render_template("result.html",
                                  success=False,
@@ -123,7 +154,7 @@ def add_update_rule():
         rules_df = pd.DataFrame(rules)
         
         # Call the main workflow
-        generated_files = main_ui_workflow(DQ_MASTER_FILE, rules_df, "add_update")
+        generated_files = main_ui_workflow(master_file, rules_df, "add_update")
         
         logger.info(f"✅ Successfully processed {len(rules)} rule(s)")
         log_separator(logger, "=", 70)
@@ -145,7 +176,8 @@ def add_update_rule():
 def configure_rule():
     if request.method == "GET":
         # Check if master file is uploaded
-        if not DQ_MASTER_FILE or not os.path.exists(DQ_MASTER_FILE):
+        master_file = get_master_file_path()
+        if not master_file:
             return redirect(url_for('landing'))
         return render_template("configure_table.html")
     
@@ -154,7 +186,8 @@ def configure_rule():
         reset_log_file()
         
         # Check if master file is uploaded
-        if not DQ_MASTER_FILE or not os.path.exists(DQ_MASTER_FILE):
+        master_file = get_master_file_path()
+        if not master_file:
             log_error(logger, "DQ Rules Master file not found")
             return render_template("result.html",
                                  success=False,
@@ -205,7 +238,7 @@ def configure_rule():
         configs_df = pd.DataFrame(configs)
         
         # Call the main workflow
-        generated_files = main_ui_workflow(DQ_MASTER_FILE, configs_df, "configure")
+        generated_files = main_ui_workflow(master_file, configs_df, "configure")
         
         logger.info(f"✅ Successfully processed {len(configs)} configuration(s)")
         log_separator(logger, "=", 70)
@@ -222,6 +255,60 @@ def configure_rule():
                              success=False,
                              message=f"Error processing configurations: {str(e)}",
                              error_details=error_details)
+
+
+@app.route("/compare-versions", methods=["GET", "POST"])
+def compare_versions():
+    if request.method == "GET":
+        return render_template("compare_versions.html")
+    
+    try:
+        log_section_start(logger, "File Version Comparison")
+        
+        # Get the two versions from the form
+        version1 = request.form.get("version1", "")
+        version2 = request.form.get("version2", "")
+        
+        if not version1 or not version2:
+            log_error(logger, "Both versions are required")
+            return render_template("compare_result.html",
+                                 has_changes=False,
+                                 diff_html="",
+                                 additions=0,
+                                 deletions=0,
+                                 changes=0,
+                                 error="Both Version 1 and Version 2 are required")
+        
+        logger.info(f"📊 Version 1: {len(version1)} characters")
+        logger.info(f"📊 Version 2: {len(version2)} characters")
+        
+        # Call the comparison function
+        result = compare_for_ui(version1, version2)
+        
+        logger.info(f"✅ Comparison completed")
+        logger.info(f"   Additions: {result['additions']}")
+        logger.info(f"   Deletions: {result['deletions']}")
+        logger.info(f"   Total Changes: {result['changes']}")
+        log_separator(logger, "=", 70)
+        
+        # Render the result template with comparison data
+        return render_template("compare_result.html",
+                             has_changes=result['has_changes'],
+                             diff_html=result['diff_html'],
+                             additions=result['additions'],
+                             deletions=result['deletions'],
+                             changes=result['changes'])
+    
+    except Exception as e:
+        error_details = traceback.format_exc()
+        log_error(logger, f"Error in compare_versions: {str(e)}", e)
+        return render_template("compare_result.html",
+                             has_changes=False,
+                             diff_html=f"<div class='error'>Error: {str(e)}</div>",
+                             additions=0,
+                             deletions=0,
+                             changes=0,
+                             error=error_details)
 
 
 if __name__ == "__main__":
